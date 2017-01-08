@@ -1,23 +1,31 @@
-import unittest
+import unittest2
 import heprumors
 
-class TestTwitter(unittest.TestCase):
+class TestPublishHepRumors(unittest2.TestCase):
+	def setUp(self):
+		mock_publisher = heprumors.TwitterPublisher(api=0)
+		mock_spreadsheet = heprumors.DriveSpreadsheetReader(records=[])
+		self.publisher = heprumors.PublishHepRumors(mock_publisher, mock_spreadsheet)
+
 	def test_make_message_accepted(self):
 		sample_row = ["name", "link", "inst", "Accepted"]
-		message = heprumors.make_message(sample_row)
+		message = self.publisher.make_message(sample_row)
 		self.assertTrue("name" in message and "inst" in message)
 
 	def test_make_message_accepted_partial(self):
 		sample_row = ["name", "link", "inst", "something Accepted something"]
-		message = heprumors.make_message(sample_row)
+		message = self.publisher.make_message(sample_row)
 		self.assertTrue("name" in message and "inst" in message)
 
 	def test_make_message_offered_partial(self):
 		sample_row = ["name", "link", "inst", "something offered something"]
-		message = heprumors.make_message(sample_row)
+		message = self.publisher.make_message(sample_row)
 		self.assertTrue("name" in message and "inst" in message)
 
+
+class TestDriveSpreadsheetReader(unittest2.TestCase):
 	def test_new_records_simple(self):
+		spreadsheet = heprumors.DriveSpreadsheetReader(records=[])
 		newlist = [
 						["name0", "link", "inst1", "Accepted"],
 						["name1 repeat", "link", "inst1", "Accepted"],
@@ -27,11 +35,8 @@ class TestTwitter(unittest.TestCase):
 						["name5 out of order", "link", "inst5", "Accepted"]
 					]
 		oldlist = newlist[2:5]
-		updates = heprumors.new_records(oldlist, newlist)
+		updates = spreadsheet.new_records(oldlist, newlist)
 
 		self.assertTrue(len(updates) == 2)
 		self.assertTrue(updates[0][0] == "name0")
 		self.assertTrue(updates[1][0] == "name5 out of order")
-
-if __name__ == '__main__':
-    unittest.main()
