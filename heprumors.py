@@ -1,7 +1,7 @@
 import tweepy
-import BeautifulSoup
-import urllib2
-import HTMLParser
+import bs4
+from urllib.request import urlopen
+from html.parser import HTMLParser
 import time
 import json
 
@@ -9,12 +9,12 @@ class TwitterPublisher:
     def __init__(self, api = None):
         if api is None:
             self.api = self._get_api(self._get_cfg())
-            print "Posting with Twitter name " + self.api.me().screen_name
+            print("Posting with Twitter name " + self.api.me().screen_name)
         else:
             self.api = api
 
     def publish_tweet(self, message):
-        print "Tweeting: " + message
+        print("Tweeting: " + message)
         self.api.update_status(status=message)
 
     def _get_api(self, cfg):
@@ -35,18 +35,18 @@ class DriveSpreadsheetReader:
             self.all_records = records
 
     def get_tables(self, htmldoc):
-        soup = BeautifulSoup.BeautifulSoup(htmldoc)
+        soup = bs4.BeautifulSoup(htmldoc, "html.parser")
         return soup.findAll('table')
 
     def makelist(self, table):
-        parser = HTMLParser.HTMLParser()
+        parser = HTMLParser()
         result = []
         allrows = table.findAll('tr')
         for row in allrows:
             result.append([])
             allcols = row.findAll('td')
             for col in allcols:
-                thestrings = [parser.unescape(unicode(s))
+                thestrings = [parser.unescape(str(s))
                               for s in col.findAll(text=True)]
                 thetext = ''.join(thestrings)
                 result[-1].append(thetext)
@@ -56,7 +56,7 @@ class DriveSpreadsheetReader:
     def fetch_data(self):
         url = self.source_url
 
-        response = urllib2.urlopen(url)
+        response = urlopen(url)
         pagecontent = response.read()
 
         tables = self.get_tables(pagecontent)
@@ -74,7 +74,7 @@ class DriveSpreadsheetReader:
         return new_recs
 
     def fetch_new_records(self):
-        print "Fetching data"
+        print("Fetching data")
         updated_recs = self.fetch_data()
         only_new_recs = self.new_records(self.all_records, updated_recs)
         self.all_records = updated_recs
@@ -107,7 +107,7 @@ class PublishHepRumors:
     def poll_publish_loop(self):
         while True:
             new_tweets = self.spreadsheet.fetch_new_records()
-            print "There are " + str(len(new_tweets)) + " updates."
+            print("There are " + str(len(new_tweets)) + " updates.")
             self.publish_new_tweets(new_tweets)
 
             time.sleep(self.sleep_interval_seconds)

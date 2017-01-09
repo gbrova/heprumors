@@ -1,4 +1,5 @@
 auth.json
 *.pyc
 .ipynb_checkpoints
+env/
 *~

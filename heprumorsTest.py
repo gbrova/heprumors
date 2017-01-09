@@ -1,7 +1,7 @@
-import unittest2
+import unittest
 import heprumors
 
-class TestPublishHepRumors(unittest2.TestCase):
+class TestPublishHepRumors(unittest.TestCase):
 	def setUp(self):
 		mock_publisher = heprumors.TwitterPublisher(api=0)
 		mock_spreadsheet = heprumors.DriveSpreadsheetReader(records=[])
@@ -23,7 +23,7 @@ class TestPublishHepRumors(unittest2.TestCase):
 		self.assertTrue("name" in message and "inst" in message)
 
 
-class TestDriveSpreadsheetReader(unittest2.TestCase):
+class TestDriveSpreadsheetReader(unittest.TestCase):
 	def test_new_records_simple(self):
 		spreadsheet = heprumors.DriveSpreadsheetReader(records=[])
 		newlist = [
