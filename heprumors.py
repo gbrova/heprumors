@@ -15,7 +15,11 @@ class TwitterPublisher:
 
     def publish_tweet(self, message):
         print "Tweeting: " + message
-        self.api.update_status(status=message)
+        try:
+            self.api.update_status(status=message)
+            pass
+        except BaseException as e:
+            print "Error while trying to tweet: " + str(e)
 
     def _get_api(self, cfg):
         auth = tweepy.OAuthHandler(cfg['consumer_key'], cfg['consumer_secret'])
