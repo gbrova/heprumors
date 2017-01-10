@@ -78,8 +78,12 @@ class DriveSpreadsheetReader:
         return new_recs
 
     def fetch_new_records(self):
-        print "Fetching data"
-        updated_recs = self.fetch_data()
+        updated_recs = self.all_records
+        print("Fetching data")
+        try:
+            updated_recs = self.fetch_data()
+        except:
+            print("Failed to fetch new data")
         only_new_recs = self.new_records(self.all_records, updated_recs)
         self.all_records = updated_recs
         return only_new_recs
