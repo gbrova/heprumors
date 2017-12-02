@@ -6,6 +6,9 @@ import time
 import json
 
 
+RUMORS_URL = 'https://docs.google.com/spreadsheets/d/1u4RuIFetw_ZNg0APlXhnbkqqYzjS2xSV9sBx0NxxfPo/htmlembed/sheet?headers=false&gid=0'
+
+
 class TwitterPublisher:
     def __init__(self, api=None):
         if api is None:
@@ -93,11 +96,10 @@ class DriveSpreadsheetReader:
 
 class PublishHepRumors:
     def __init__(self, twitter_publisher=None, spreadsheet=None):
-        rumors_url = 'https://docs.google.com/spreadsheets/d/1iMsLRnNNHFKmdq7ltrp9BR4jDd-Ots6UYDK2dgyRLZ0/htmlembed/sheet?headers=false&gid=0'
         self.sleep_interval_seconds = 30
 
         self.twitter_publisher = twitter_publisher or TwitterPublisher()
-        self.spreadsheet = spreadsheet or DriveSpreadsheetReader(source_url=rumors_url)
+        self.spreadsheet = spreadsheet or DriveSpreadsheetReader(source_url=RUMORS_URL)
 
     def make_message(self, record):
         name = record[0]
@@ -125,4 +127,12 @@ class PublishHepRumors:
 
 if __name__ == "__main__":
     rumor_publisher = PublishHepRumors()
+
+    last_record = rumor_publisher.spreadsheet.all_records[0]
+    last_message = rumor_publisher.make_message(last_record)
+    print(
+        'Last message that would have been published (exit if this is wrong):',
+        last_message)
+
+    time.sleep(10)
     rumor_publisher.poll_publish_loop()
