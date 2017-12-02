@@ -5,8 +5,9 @@ import HTMLParser
 import time
 import json
 
+
 class TwitterPublisher:
-    def __init__(self, api = None):
+    def __init__(self, api=None):
         if api is None:
             self.api = self._get_api(self._get_cfg())
             print "Posting with Twitter name " + self.api.me().screen_name
@@ -30,8 +31,9 @@ class TwitterPublisher:
         with open('auth.json', 'r') as authfile:
             return json.load(authfile)
 
+
 class DriveSpreadsheetReader:
-    def __init__(self, source_url = None, records = None):
+    def __init__(self, source_url=None, records=None):
         self.source_url = source_url
         if records is None:
             self.all_records = self.fetch_data()
@@ -88,13 +90,14 @@ class DriveSpreadsheetReader:
         self.all_records = updated_recs
         return only_new_recs
 
+
 class PublishHepRumors:
-    def __init__(self, twitter_publisher = None, spreadsheet = None):
+    def __init__(self, twitter_publisher=None, spreadsheet=None):
         rumors_url = 'https://docs.google.com/spreadsheets/d/1iMsLRnNNHFKmdq7ltrp9BR4jDd-Ots6UYDK2dgyRLZ0/htmlembed/sheet?headers=false&gid=0'
         self.sleep_interval_seconds = 30
 
         self.twitter_publisher = twitter_publisher or TwitterPublisher()
-        self.spreadsheet = spreadsheet or DriveSpreadsheetReader(source_url = rumors_url)
+        self.spreadsheet = spreadsheet or DriveSpreadsheetReader(source_url=rumors_url)
 
     def make_message(self, record):
         name = record[0]
